@@ -1,0 +1,32 @@
+/* Custom styles if needed 
+.categories h3 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.book-item img {
+  max-height: 200px; 
+}
+
+footer {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+*/
+/* Hover effect for category items */
+.category-item:hover {
+  background-color: #ffda7d; /* Light gray background on hover */
+  cursor: pointer; /* Change cursor to pointer */
+  transition: background-color 0.2s ease; /* Smooth transition */
+}
+
+/* Set a fixed height and width for book images */
+.book-image {
+  width: 100%; /* Make the image responsive to the card width */
+  height: 200px; /* Set a fixed height for all images */
+  object-fit: contain; /* Ensure the entire image is visible without cropping */
+  background-color: #f8f9fa; /* Optional: Add a background color for padding */
+  padding: 10px; /* Optional: Add padding around the image */
+  border-radius: 5px 5px 0 0; /* Optional: Add rounded corners to match card styling */
+}

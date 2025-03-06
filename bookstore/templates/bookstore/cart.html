@@ -1,0 +1,181 @@
+{% extends 'bookstore/base.html' %} {% block body %}
+<div class="container mt-4">
+  <div class="row">
+    <!-- Cart Items Section -->
+    <div class="col-md-8">
+      <h2>Your Cart</h2>
+      <table class="table text-center">
+        <thead>
+          <tr>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="cart-items">
+          <!-- Cart items will be added dynamically using JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Checkout Summary Section -->
+    <div class="col-md-4">
+      <h4>Checkout Summary</h4>
+      <table class="table">
+        <tr>
+          <td>Books</td>
+          <td><span id="total-qty">0</span></td>
+        </tr>
+        <tr>
+          <td>Subtotal</td>
+          <td>$<span id="subtotal">0</span></td>
+        </tr>
+        <tr>
+          <td>Shipping</td>
+          <td>$<span id="shipping">5</span></td>
+          <!-- Static Shipping -->
+        </tr>
+        <tr>
+          <td><b>Payable Total</b></td>
+          <td>
+            <b>$<span id="total">0</span></b>
+          </td>
+        </tr>
+      </table>
+      <a href="{% url 'bookstore:home' %}" class="btn btn-primary w-100">
+        Continue to Shop
+      </a>
+      <!-- <button class="btn btn-success w-100 mt-2">Proceed to Checkout</button> -->
+      <!-- <a
+        href="{% url 'bookstore:checkout' %}"
+        id="proceed-to-checkout"
+        class="btn btn-success w-100 mt-2"
+      >
+        Proceed to Checkout
+      </a> -->
+      <button id="proceed-to-checkout" class="btn btn-success w-100 mt-2">
+        Proceed to Checkout
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize cart from localStorage or create an empty cart
+    let cart = JSON.parse(localStorage.getItem("cart")) || {};
+    let cartTable = document.getElementById("cart-items");
+    let totalQty = 0;
+    let subtotal = 0;
+
+    if (Object.keys(cart).length === 0) {
+      cartTable.innerHTML = "<tr><td colspan='5'>Your cart is empty.</td></tr>";
+      return;
+    }
+
+    let bookIds = Object.keys(cart).join(",");
+
+    // Fetch book details from Django
+    fetch(`/bookstore/get-cart-books/?ids=${bookIds}`)
+      .then((response) => response.json())
+      .then((data) => {
+        data.books.forEach((book) => {
+          let row = document.createElement("tr");
+          row.innerHTML = `
+              <td><img src="${book.image}" width="50"></td>
+              <td>${book.title}</td>
+              <td>
+                <input type="number" value="${
+                  cart[book.id]
+                }" min="1" class="cart-qty" data-id="${
+            book.id
+          }" style="width: 50px;">
+              </td>
+              <td>$${(book.price * cart[book.id]).toFixed(2)}</td>
+              <td>
+                <button class="btn btn-danger remove-item" data-id="${
+                  book.id
+                }">🗑️</button>
+              </td>
+            `;
+          cartTable.appendChild(row);
+
+          totalQty += cart[book.id];
+          subtotal += book.price * cart[book.id];
+        });
+
+        document.getElementById("total-qty").textContent = totalQty;
+        document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+        document.getElementById("total").textContent = (subtotal + 5).toFixed(
+          2
+        );
+
+        // Handle quantity changes
+        document.querySelectorAll(".cart-qty").forEach((input) => {
+          input.addEventListener("change", function () {
+            let id = this.getAttribute("data-id");
+            let newQty = parseInt(this.value);
+            if (newQty > 0) {
+              cart[id] = newQty;
+            } else {
+              delete cart[id];
+            }
+            localStorage.setItem("cart", JSON.stringify(cart));
+            location.reload();
+          });
+        });
+
+        // Handle item removal
+        document.querySelectorAll(".remove-item").forEach((button) => {
+          button.addEventListener("click", function () {
+            let id = this.getAttribute("data-id");
+            delete cart[id];
+            localStorage.setItem("cart", JSON.stringify(cart));
+            location.reload();
+          });
+        });
+      });
+
+    // Handle "Proceed to Checkout" button click
+    document
+      .getElementById("proceed-to-checkout")
+      .addEventListener("click", function () {
+        let totalItems = document.getElementById("total-qty").textContent;
+        let subtotal = document.getElementById("subtotal").textContent;
+        let total = document.getElementById("total").textContent;
+
+        console.log("🟢 Proceed to Checkout Clicked!");
+        console.log("Total Items:", totalItems);
+        console.log("Subtotal:", subtotal);
+        console.log("Total:", total);
+
+        // Save cart summary to session
+        fetch("{% url 'bookstore:save_cart_summary' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+          },
+          body: JSON.stringify({
+            total_items: totalItems,
+            subtotal: subtotal,
+            total: total,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("🟢 Server Response:", data);
+            if (data.success) {
+              // Redirect to checkout page
+              window.location.href = "{% url 'bookstore:checkout' %}";
+            } else {
+              alert("Error saving cart summary. Try again!");
+            }
+          })
+          .catch((error) => console.error("🔴 Fetch Error:", error));
+      });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends 'bookstore/base.html' %} {% block body %}
+<div class="container mt-5">
+  <div class="row">
+    <!-- Left side: Book Image -->
+    <div class="col-md-4 text-center">
+      <img
+        src="{{ book.book_image }}"
+        alt="{{ book.title }}"
+        class="img-fluid rounded shadow-lg"
+        style="max-width: 100%"
+      />
+    </div>
+
+    <!-- Right side: Book Details -->
+    <div class="col-md-8">
+      <h2 class="fw-bold">{{ book.title }}</h2>
+      <h5 class="text-muted">By {{ book.author }}</h5>
+      <p class="mt-2">⭐⭐⭐⭐ ({{ book.rating }})</p>
+      <h4 class="text-danger fw-bold">Price: ${{ book.price }}</h4>
+      <p class="mt-3">{{ book.desc }}</p>
+
+      <button class="btn btn-primary mt-3">Add to Cart 🛒</button>
+    </div>
+  </div>
+</div>
+{% endblock %}

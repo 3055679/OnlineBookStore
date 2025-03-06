@@ -1,0 +1,269 @@
+{% extends 'bookstore/base.html' %} {% block body %}
+<div class="container mt-4">
+  <div class="row">
+    <!-- Shipping Address & Payment Section -->
+    <div class="col-md-8">
+      <h4>Shipping Address</h4>
+      <form id="checkout-form">
+        <div class="row">
+          <div class="col-md-6">
+            <label>Name*</label>
+            <input type="text" class="form-control" name="name" required />
+          </div>
+          <div class="col-md-6">
+            <label>Email*</label>
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              value="abc@gmail.com"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="mt-3">
+          <label>Phone</label>
+          <input type="text" class="form-control" name="phone" />
+        </div>
+
+        <div class="mt-3">
+          <label>Address</label>
+          <input
+            type="text"
+            class="form-control"
+            name="address"
+            placeholder="Flat"
+          />
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-4">
+            <label>Division</label>
+            <input type="text" class="form-control" name="division" />
+          </div>
+          <div class="col-md-4">
+            <label>State</label>
+            <input type="text" class="form-control" name="state" />
+          </div>
+          <div class="col-md-4">
+            <label>Zipcode</label>
+            <input type="text" class="form-control" name="zipcode" />
+          </div>
+        </div>
+
+        <!-- Payment Method -->
+        <h4 class="mt-4">Payment Method*</h4>
+        <div class="mt-2">
+          <input type="radio" name="payment" value="credit" required /> Credit
+          Card
+          <input type="radio" name="payment" value="debit" class="ms-3" /> Debit
+          Card
+          <input type="radio" name="payment" value="paypal" class="ms-3" />
+          PayPal
+        </div>
+
+        <!-- Credit/Debit Card Fields -->
+        <div id="card-fields" class="mt-3" style="display: none">
+          <label>Account No*</label>
+          <input type="text" class="form-control" name="account_no" />
+
+          <div class="row mt-3">
+            <div class="col-md-4">
+              <label>CVV*</label>
+              <input type="text" class="form-control" name="cvv" />
+            </div>
+            <div class="col-md-4">
+              <label>Expiry Date*</label>
+              <input
+                type="text"
+                class="form-control"
+                name="expiry_date"
+                placeholder="MM/YY"
+              />
+            </div>
+            <div class="col-md-4">
+              <label>Sort Code*</label>
+              <input type="text" class="form-control" name="sort_code" />
+            </div>
+          </div>
+        </div>
+
+        <!-- PayPal Fields -->
+        <div id="paypal-fields" class="mt-3" style="display: none">
+          <label>PayPal ID*</label>
+          <input type="email" class="form-control" name="paypal_id" />
+        </div>
+
+        <!-- Continue to Checkout -->
+        <button type="submit" class="btn btn-primary w-100 mt-4">
+          Continue to Checkout
+        </button>
+      </form>
+    </div>
+
+    <!-- Checkout Summary -->
+    <div class="col-md-4">
+      <h4>Checkout Summary</h4>
+      <table class="table">
+        <tr>
+          <td>Books</td>
+          <td id="total-items">{{ total_items }}</td>
+        </tr>
+        <tr>
+          <td>Subtotal</td>
+          <td id="subtotal">$ {{ subtotal }}</td>
+        </tr>
+        <tr>
+          <td>Shipping</td>
+          <td id="shipping">$ {{ shipping }}</td>
+        </tr>
+        <tr>
+          <td><b>Payable Total</b></td>
+          <td><b id="total">$ {{ total }}</b></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- <script>
+  // Show relevant payment fields based on the selected payment method
+  document.querySelectorAll('input[name="payment"]').forEach((input) => {
+    input.addEventListener("change", function () {
+      let paymentMethod = this.value;
+      document.getElementById("card-fields").style.display =
+        paymentMethod === "credit" || paymentMethod === "debit"
+          ? "block"
+          : "none";
+      document.getElementById("paypal-fields").style.display =
+        paymentMethod === "paypal" ? "block" : "none";
+    });
+  });
+
+  // Submit the form via AJAX
+  document
+    .getElementById("checkout-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      let formData = {
+        name: document.querySelector('input[name="name"]').value,
+        email: document.querySelector('input[name="email"]').value,
+        phone: document.querySelector('input[name="phone"]').value,
+        address: document.querySelector('input[name="address"]').value,
+        division: document.querySelector('input[name="division"]').value,
+        state: document.querySelector('input[name="state"]').value,
+        zipcode: document.querySelector('input[name="zipcode"]').value,
+        payment_method: document.querySelector('input[name="payment"]:checked')
+          .value,
+        account_no:
+          document.querySelector('input[name="account_no"]')?.value || "",
+        cvv: document.querySelector('input[name="cvv"]')?.value || "",
+        expiry_date:
+          document.querySelector('input[name="expiry_date"]')?.value || "",
+        sort_code:
+          document.querySelector('input[name="sort_code"]')?.value || "",
+        paypal_id:
+          document.querySelector('input[name="paypal_id"]')?.value || "",
+        total_price: parseFloat(localStorage.getItem("subtotal")) + 5,
+      };
+
+      fetch("{% url 'bookstore:place_order' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify(formData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            localStorage.setItem("order_id", data.order_id);
+            window.location.href = "{% url 'bookstore:transaction' %}";
+          } else {
+            alert("Order failed. Please try again.");
+          }
+        });
+    });
+</script> -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Show relevant payment fields based on the selected payment method
+    document.querySelectorAll('input[name="payment"]').forEach((input) => {
+      input.addEventListener("change", function () {
+        let paymentMethod = this.value;
+        document.getElementById("card-fields").style.display =
+          paymentMethod === "credit" || paymentMethod === "debit"
+            ? "block"
+            : "none";
+        document.getElementById("paypal-fields").style.display =
+          paymentMethod === "paypal" ? "block" : "none";
+      });
+    });
+
+    // Submit the form via AJAX
+    document
+      .getElementById("checkout-form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Gather form data
+        let formData = {
+          name: document.querySelector('input[name="name"]').value,
+          email: document.querySelector('input[name="email"]').value,
+          phone: document.querySelector('input[name="phone"]').value,
+          address: document.querySelector('input[name="address"]').value,
+          division: document.querySelector('input[name="division"]').value,
+          state: document.querySelector('input[name="state"]').value,
+          zipcode: document.querySelector('input[name="zipcode"]').value,
+          payment_method: document.querySelector(
+            'input[name="payment"]:checked'
+          ).value,
+          account_no:
+            document.querySelector('input[name="account_no"]')?.value || "",
+          cvv: document.querySelector('input[name="cvv"]')?.value || "",
+          expiry_date:
+            document.querySelector('input[name="expiry_date"]')?.value || "",
+          sort_code:
+            document.querySelector('input[name="sort_code"]')?.value || "",
+          paypal_id:
+            document.querySelector('input[name="paypal_id"]')?.value || "",
+          total_price: parseFloat(localStorage.getItem("subtotal")) + 5,
+        };
+
+        // Debugging: Print the form data
+        console.log("🟢 Form Data:", formData);
+
+        // Send the form data to the server
+        fetch("{% url 'bookstore:place_order' %}", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+          },
+          body: JSON.stringify(formData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("🟢 Server Response:", data);
+            if (data.success) {
+              localStorage.setItem("order_id", data.order_id);
+              window.location.href = "{% url 'bookstore:transaction' %}";
+            } else {
+              alert(
+                "Order failed. Please try again. Error: " +
+                  (data.error || "Unknown error")
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("🔴 Fetch Error:", error);
+            alert("An error occurred. Please try again.");
+          });
+      });
+  });
+</script>
+{% endblock %}

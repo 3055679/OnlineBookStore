@@ -1,0 +1,14 @@
+{% extends 'bookstore/base.html' %} {% block content %}
+<div class="container">
+  <h2>Search Results for "{{ book_name }}"</h2>
+  {% if results %}
+  <ul>
+    {% for book in results %}
+    <li>{{ book.title }}</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No results found.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends 'bookstore/base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Book Store</title>
+  </head>
+  <body>
+    {% block body %}
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+      <div class="row">
+        <!-- Categories Section (Reduced Width) -->
+        <div class="col-md-2 pe-3 border-end">
+          <h3 class="border-bottom pb-3 fs-4 ps-0">Categories</h3>
+          <ul class="list-group ps-0">
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Computer Science
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Literature & Fiction
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Kids & Comics
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              History & Biography
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Science & Technology
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Self-Help & Motivation
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Mystery & Thriller
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Fantasy & Adventure
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Business & Finance
+            </li>
+            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+              Health & Wellness
+            </li>
+          </ul>
+        </div>
+        <!-- Book Section -->
+        <div class="col-md-10 d-flex flex-column">
+          <div class="text-center mb-4">
+            <h2>Featured Book</h2>
+            <img src="#" alt="Featured Book" class="img-fluid" />
+          </div>
+
+          <!-- Book List Section -->
+          <div class="row">
+            {% for book in book_list %}
+            <div class="col-md-4 mb-4">
+              <div class="card h-100 text-center">
+                <img
+                  src="{{ book.book_image }}"
+                  class="card-img-top book-image"
+                  alt="{{ book.title }}"
+                />
+                <div class="card-body">
+                  <h5 class="card-title">
+                    <a
+                      href="{% url 'bookstore:detail' book.id %}"
+                      class="text-decoration-none"
+                    >
+                      {{ book.title }}
+                    </a>
+                  </h5>
+                  <p class="text-danger fw-bold">Price: ${{ book.price }}</p>
+                  <button class="btn atc btn-warning" id="{{ book.id }}">
+                    🛒 Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!--  JavaScript Placed Correctly Inside -->
+    <!-- <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let cart = JSON.parse(localStorage.getItem("cart")) || {};
+
+        // Update Cart Count in Navbar
+        function updateCartCount() {
+          document.getElementById("cart-count").textContent =
+            Object.keys(cart).length;
+        }
+        updateCartCount();
+
+        // Add to Cart Logic
+        document.querySelectorAll(".atc").forEach((button) => {
+          button.addEventListener("click", function () {
+            let item_id = this.id.toString();
+
+            if (cart[item_id] !== undefined) {
+              cart[item_id] += 1;
+            } else {
+              cart[item_id] = 1;
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCartCount();
+            alert("Item added to cart!"); // Small alert message
+          });
+        });
+      });
+    </script> -->
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize cart from localStorage, or set it to an empty object if it's not available
+        let cart = JSON.parse(localStorage.getItem("cart")) || {};
+
+        // Debugging: Check the cart in the console
+        console.log("Cart on Load: ", cart);
+
+        // Update Cart Count in Navbar
+        function updateCartCount() {
+          let count = Object.keys(cart).length;
+          document.getElementById("cart-count").textContent = count;
+        }
+
+        // Initialize the cart count when the page loads
+        updateCartCount();
+
+        // Add to Cart Logic
+        document.querySelectorAll(".atc").forEach((button) => {
+          button.addEventListener("click", function () {
+            let item_id = this.id.toString(); // Get the book ID from button's ID
+
+            // Check if item already in cart and increment, otherwise add new item
+            if (cart[item_id] !== undefined) {
+              cart[item_id] += 1;
+            } else {
+              cart[item_id] = 1;
+            }
+
+            // Save updated cart in localStorage
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            // Update the cart count in the navbar
+            updateCartCount();
+            alert("Item added to cart!");
+          });
+        });
+
+        // localStorage.removeItem("cart"); // Uncomment this to clear the cart when needed
+      });
+    </script>
+
+    {% endblock %}
+  </body>
+</html>
