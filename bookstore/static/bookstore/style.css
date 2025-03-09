@@ -1,3 +1,4 @@
+
 /* Custom styles if needed 
 .categories h3 {
   font-size: 24px;
@@ -15,6 +16,11 @@ footer {
 }
 */
 /* Hover effect for category items */
+
+
+/*Apply an Artistic Font to "Book Sailor"*/
+
+
 .category-item:hover {
   background-color: #ffda7d; /* Light gray background on hover */
   cursor: pointer; /* Change cursor to pointer */
@@ -29,4 +35,72 @@ footer {
   background-color: #f8f9fa; /* Optional: Add a background color for padding */
   padding: 10px; /* Optional: Add padding around the image */
   border-radius: 5px 5px 0 0; /* Optional: Add rounded corners to match card styling */
+}
+
+.navbar {
+  background-color: #007A99 !important;  /* New ocean-inspired color */
+  border-bottom: 3px solid #004d66; /* Darker shade for depth */
+  min-height: 70px !important; /* Adjust this value as needed */
+  padding: 15px 20px !important; /* Adds more spacing inside the navbar */
+}
+
+.navbar .btn-success {
+  background-color: #005f73 !important; /* Darker teal */
+  border: none;
+}
+
+.navbar .btn-warning {
+  background-color: #f4a261 !important; /* Soft orange */
+  color: black;
+}
+
+.navbar a {
+  color: white !important; /* Change login link to white */
+  margin-right: 10px;
+  text-decoration: none; /* Remove underline */
+}
+
+.navbar a:hover {
+  color: #f4a261 !important; /* Change color on hover */
+}
+
+#cart-btn {
+  background-color: #FFD166 !important; /* Softer yellow */
+  color: black !important; /* Better readability */
+  font-weight: bold;
+  border: none;
+}
+
+#cart-btn:hover {
+  background-color: #FFD166 !important; /* No change on hover */
+}
+
+.btn-primary {
+  background-color: #005f73 !important; /* Match search button */
+  border: none !important;
+  color: white !important;
+  padding: 8px 15px; /* Ensure even spacing */
+}
+
+.btn-primary:hover {
+  background-color: #00405a !important; /* Darker hover effect */
+}
+
+/* ✅ Fully Remove Focus Outline */
+.btn-primary:focus, 
+.btn-primary:active, 
+.btn-primary:focus-visible,
+.btn:focus, 
+.btn:active {
+  box-shadow: none !important; /* Removes blue glow */
+  outline: none !important; /* Removes extra focus styles */
+  background-color: #005f73 !important; /* Ensures color doesn't change */
+}
+
+.banner img {
+  width: 100%;  /* Make the banner span full width */
+  max-height: 300px; /* Adjust this value based on your layout */
+  object-fit: cover; /* Ensures the image doesn't stretch */
+  border-radius: 10px; /* Optional: Adds rounded corners */
+  margin-bottom: 20px; /* Spacing between banner and book listings */
 }

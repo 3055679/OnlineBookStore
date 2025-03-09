@@ -1,0 +1,54 @@
+{% extends 'bookstore/base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center">Order Status</h2>
+    
+    <div class="card p-4 mt-4">
+        <h4>Order ID: #{{ order.id }}</h4>
+        <p><b>Order Date:</b> {{ order.created_at|date:"d/m/Y" }}</p>
+        <p><b>Total Amount:</b> ${{ order.total_price }}</p>
+        <p><b>Shipping Address:</b> {{ order.address }}</p>
+
+        <hr>
+
+    <h4>Order Status</h4>
+    <ul>
+        <li> Order Placed & Confirmed {% if order.status in "Confirmed Delivered Return Requested Cancelled" %}✔{% endif %}</li>
+        <li> Shipped {% if order.status == "Delivered" %}✔{% endif %}</li>
+        <li> Return Requested {% if order.status == "Return Requested" %}✔{% endif %}</li>
+        <li> Cancelled {% if order.status == "Cancelled" %}✔{% endif %}</li>
+    </ul>
+
+
+        <hr>
+
+        <h4>Order Items</h4>
+        <ul>
+            {% for item in order.items.all %}
+                <li>{{ item.book.title }} | Qty: {{ item.quantity }} | ${{ item.book.price }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<script>
+    function checkOrderStatus() {
+        let orderId = "{{ order.id }}";
+        
+        fetch(`/bookstore/order_status_api/${orderId}/`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("order-status").innerHTML = `
+                <li>Order Placed & Confirmed ${["Confirmed", "Delivered", "Return Requested", "Cancelled"].includes(data.status) ? "✔" : ""}</li>
+                <li>Shipped ${data.status === "Delivered" ? "✔" : ""}</li>
+                <li>Return Requested ${data.status === "Return Requested" ? "✔" : ""}</li>
+                <li>Cancelled ${data.status === "Cancelled" ? "✔" : ""}</li>
+            `;
+        });
+    }
+
+    setInterval(checkOrderStatus, 5000);  
+</script>
+
+{% endblock %}

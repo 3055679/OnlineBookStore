@@ -2,6 +2,16 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+      .navbar-brand {
+          font-family: 'Pacifico', cursive !important;
+          font-size: 24px;
+          font-weight: bold;
+          color: white !important;
+      }
+    </style>
+    
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Online Book Store</title>
@@ -27,9 +37,9 @@
   <body class="d-flex flex-column min-vh-100">
     <!-- Navbar (Header) -->
     {% block header %}
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <nav class="navbar navbar-expand-lg px-4">
       <a class="navbar-brand" href="{% url 'bookstore:home' %}"
-        >📚 Book Store</a
+        >🌊 Book Sailor</a
       >
       <form
         method="GET"
@@ -55,7 +65,7 @@
       <a href="{% url 'login' %}">Login</a>
       {% endif %}
       <div class="d-flex">
-        <div class="dropdown">
+        <!--<div class="dropdown">
           <button
             class="btn btn-light dropdown-toggle me-3"
             type="button"
@@ -64,16 +74,15 @@
             Profile
           </button>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">My Orders</a></li>
-            <li><a class="dropdown-item" href="#">Sign Out</a></li>
+            <li><a class="dropdown-item" href="{% url 'bookstore:my_orders' %}">My Orders</a></li>
+            
           </ul>
         </div>
-        <!-- <a id="cart" class="btn btn-warning" href="#">🛒 Cart</a> -->
-        <a
-          id="cart-btn"
-          class="btn btn-warning"
-          href="{% url 'bookstore:cart' %}"
-        >
+         <a id="cart" class="btn btn-warning" href="#">🛒 Cart</a> -->
+         <a href="{% url 'bookstore:my_orders' %}" class="btn btn-primary me-2">
+           My Orders
+        </a>        
+        <a id="cart-btn" class="btn btn-primary" href="{% url 'bookstore:cart' %}">
           🛒 Cart (<span id="cart-count">0</span>)
         </a>
       </div>
@@ -97,6 +106,9 @@
     </div>
     <!-- This will process messages so they get cleared -->
     {% endif %}
+
+  
+    
 
     <!-- Main Content -->
     <div class="flex-grow-1">{% block body %} {% endblock %}</div>

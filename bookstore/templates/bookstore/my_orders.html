@@ -1,0 +1,122 @@
+{% extends 'bookstore/base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="mb-4"> My Orders</h2>
+
+    <table class="table table-bordered text-center">
+        <thead class="thead-dark">
+            <tr>
+                <th>Order ID</th>
+                <th>Product Name</th>
+                <th>Qty</th>
+                <th>Payment</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>#{{ order.id }}</td>
+                <td>
+                  {% for item in order.items_list %}
+                      <p>{{ item.book.title }}</p>
+                  {% endfor %}
+              </td>
+              <td>
+                {% for item in order.items_list %}
+                    <p>{{ item.quantity }}</p>
+                {% endfor %}
+            </td>
+                <td>{{ order.payment_method }}</td>
+                <td>
+                  <a href="{% url 'bookstore:order_status' order.id %}" class="btn btn-info">
+                      {{ order.status }}
+                  </a>
+              </td>
+              <td>
+                {% if order.status == "Processing" %}
+                    <a href="{% url 'bookstore:cancel_order_page' order.id %}" class="btn btn-danger">Cancel Order</a>
+                {% elif order.status == "Delivered" %}
+                <a href="{% url 'bookstore:return_order_page' order.id %}" class="btn btn-warning">Return</a>
+                {% elif order.status == "Return Requested" %}
+                <a href="{% url 'bookstore:order_status' order.id %}" class="btn btn-info">View Status</a>
+                {% else %}
+                    <span>No action</span>
+                {% endif %}
+            </td>
+            
+                <td>{{ order.created_at|date:"d/m/Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No orders found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}
+
+<script>
+
+  document.querySelectorAll(".cancel-order").forEach(button => {
+      let orderId = button.getAttribute("data-order-id");
+      console.log(`🔵 Found cancel order button: Order ID ${orderId}`);
+
+      button.addEventListener("click", function () {
+          console.log(`🟠 User clicked the cancel order button, Order ID: ${orderId}`);
+
+          selectedOrderId = orderId;
+          document.getElementById("orderIdText").textContent = `#${orderId}`;
+          modal.style.display = "block";
+      });
+  });
+
+
+
+  document.getElementById("submitCancel").addEventListener("click", function () {
+      let reason = document.getElementById("cancelReason").value.trim();
+
+      if (reason === "") {
+          alert("⚠️ Please provide a reason for cancellation.");
+          return;
+      }
+
+      console.log(`🟠 Sending cancel order request... Order ID: ${selectedOrderId}, Reason: ${reason}`);
+
+      fetch(`/bookstore/cancel_order/${selectedOrderId}/`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRFToken()
+          },
+          body: JSON.stringify({ reason: reason })
+      })
+      .then(response => response.json())
+      .then(data => {
+          console.log("🟢 Server response:", data);
+
+          if (data.success) {
+              alert("✅ Order cancelled successfully!");
+              modal.style.display = "none";
+              window.location.href = window.location.href;
+          } else {
+              alert("❌ Error: " + data.error);
+          }
+      })
+      .catch(error => console.error("🔴 Error:", error));
+  });
+
+
+  function getCSRFToken() {
+      return document.querySelector("[name=csrfmiddlewaretoken]")?.value || "{{ csrf_token }}";
+  }
+
+</script>
+  
+

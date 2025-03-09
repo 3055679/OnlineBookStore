@@ -1,4 +1,6 @@
 {% extends 'bookstore/base.html' %}
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -16,75 +18,87 @@
           <h3 class="border-bottom pb-3 fs-4 ps-0">Categories</h3>
           <ul class="list-group ps-0">
             <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Computer Science
+              <a href="{% url 'bookstore:all_books' %}" class="text-decoration-none text-dark">
+                  All Books
+              </a>
             </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Literature & Fiction
-            </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Kids & Comics
-            </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              History & Biography
-            </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Science & Technology
-            </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Self-Help & Motivation
-            </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Mystery & Thriller
-            </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Fantasy & Adventure
-            </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Business & Finance
-            </li>
-            <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
-              Health & Wellness
-            </li>
+              {% for category in categories %}
+              <li class="list-group-item py-3 fs-5 mb-2 text-start category-item">
+                  <a href="{% url 'bookstore:books_by_category' category.id %}" class="text-decoration-none text-dark">
+                      {{ category.name }}
+                  </a>
+              </li>
+              {% endfor %}
           </ul>
-        </div>
-        <!-- Book Section -->
-        <div class="col-md-10 d-flex flex-column">
+      </div>  
+      
+        <!-- Books Section -->
+        <div class="col-md-10">
+          <h3 class="border-bottom pb-3 fs-4 ps-0">
+            {% if selected_category %}
+              Books in "{{ selected_category.name }}"
+            {% else %}
+              All Books
+            {% endif %}
+          </h3>
+          <!-- Featured Book       
           <div class="text-center mb-4">
             <h2>Featured Book</h2>
             <img src="#" alt="Featured Book" class="img-fluid" />
           </div>
+          --> 
+        
+          <div class="banner">
+            <img src="{% static 'bookstore/resized_banner.png' %}" alt="Book Sailor Banner" class="img-fluid">
+          </div>
+        
 
-          <!-- Book List Section -->
           <div class="row">
+            {% for book in books %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 text-center">
+                    <img src="{{ book.book_image }}" class="card-img-top book-image" alt="{{ book.title }}" />
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="#" class="text-decoration-none">
+                                {{ book.title }}
+                            </a>
+                        </h5>
+                        <p class="text-danger fw-bold">Price: ${{ book.price }}</p>
+                        <button class="btn btn-warning atc" id="{{ book.id }}">
+                            🛒 Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            {% empty %}
+               <!-- <p class="text-center">All Books</p>  -->
+            {% endfor %} 
+
             {% for book in book_list %}
             <div class="col-md-4 mb-4">
-              <div class="card h-100 text-center">
-                <img
-                  src="{{ book.book_image }}"
-                  class="card-img-top book-image"
-                  alt="{{ book.title }}"
-                />
-                <div class="card-body">
-                  <h5 class="card-title">
-                    <a
-                      href="{% url 'bookstore:detail' book.id %}"
-                      class="text-decoration-none"
-                    >
-                      {{ book.title }}
-                    </a>
-                  </h5>
-                  <p class="text-danger fw-bold">Price: ${{ book.price }}</p>
-                  <button class="btn atc btn-warning" id="{{ book.id }}">
-                    🛒 Add to Cart
-                  </button>
+                <div class="card h-100 text-center">
+                    <img src="{{ book.book_image }}" class="card-img-top book-image" alt="{{ book.title }}" />
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <a href="{% url 'bookstore:detail' book.id %}" class="text-decoration-none">
+                                {{ book.title }}
+                            </a>
+                        </h5>
+                        <p class="text-danger fw-bold">Price: ${{ book.price }}</p>
+                        <button class="btn btn-warning atc" id="{{ book.id }}">
+                            🛒 Add to Cart
+                        </button>
+                    </div>
                 </div>
-              </div>
             </div>
             {% endfor %}
-          </div>
-        </div>
-      </div>
-    </div>
+        </div>  
+    </div>  
+    
+</div>  
+</div>  
 
     <!--  JavaScript Placed Correctly Inside -->
     <!-- <script>
@@ -133,6 +147,13 @@
 
         // Initialize the cart count when the page loads
         updateCartCount();
+
+        let buttons = document.querySelectorAll(".atc");
+        console.log("Found buttons:", buttons);  // debug: find the number of buttons
+
+        if (buttons.length === 0) {
+            console.error("⚠️ No .atc buttons found! Check if HTML is correctly rendered.");
+        }
 
         // Add to Cart Logic
         document.querySelectorAll(".atc").forEach((button) => {

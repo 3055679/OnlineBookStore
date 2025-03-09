@@ -5,6 +5,11 @@
     <div class="col-md-8">
       <h4>Shipping Address</h4>
       <form id="checkout-form">
+        {% for book in cart_books %}
+            <input type="hidden" name="book_id[]" value="{{ book.id }}">
+        {% endfor %}
+
+
         <div class="row">
           <div class="col-md-6">
             <label>Name*</label>
@@ -120,8 +125,11 @@
         </tr>
         <tr>
           <td><b>Payable Total</b></td>
-          <td><b id="total">$ {{ total }}</b></td>
-        </tr>
+          <td>
+            <b id="total_price">$ {{ total }}</b>
+            <input type="hidden" id="total_price_input" name="total_price" value="{{ total }}">
+          </td>
+        </tr>        
       </table>
     </div>
   </div>
@@ -189,6 +197,7 @@
     });
 </script> -->
 
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     // Show relevant payment fields based on the selected payment method
@@ -204,11 +213,23 @@
       });
     });
 
+    let placeOrderUrl = "{% url 'bookstore:place_order' %}"; 
+
+
     // Submit the form via AJAX
     document
       .getElementById("checkout-form")
       .addEventListener("submit", function (event) {
         event.preventDefault();
+
+        let totalPriceElement = document.getElementById("total_price_input");
+        let totalPrice = 0;
+        if (totalPriceElement) {
+          totalPrice = parseFloat(totalPriceElement.textContent.replace("$", "").trim());
+        } else {
+          alert("Error: Total price not found.");
+          return;
+        }
 
         // Gather form data
         let formData = {
@@ -219,6 +240,7 @@
           division: document.querySelector('input[name="division"]').value,
           state: document.querySelector('input[name="state"]').value,
           zipcode: document.querySelector('input[name="zipcode"]').value,
+
           payment_method: document.querySelector(
             'input[name="payment"]:checked'
           ).value,
@@ -231,14 +253,16 @@
             document.querySelector('input[name="sort_code"]')?.value || "",
           paypal_id:
             document.querySelector('input[name="paypal_id"]')?.value || "",
-          total_price: parseFloat(localStorage.getItem("subtotal")) + 5,
+          total_price: totalPrice, 
+          book_ids:bookIds,
+         
         };
 
         // Debugging: Print the form data
         console.log("🟢 Form Data:", formData);
 
         // Send the form data to the server
-        fetch("{% url 'bookstore:place_order' %}", {
+        fetch(placeOrderUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -266,4 +290,75 @@
       });
   });
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let cart = JSON.parse(localStorage.getItem("cart")) || {}; 
+    console.log("🟢 Cart details:", cart);
+
+    if (Object.keys(cart).length === 0) {
+        alert("⚠️ The cart is empty！");
+        window.location.href = "{% url 'bookstore:cart' %}";
+        return;
+    }
+
+    function updateCheckoutSummary() {
+        let totalItems = Object.values(cart).reduce((sum, qty) => sum + qty, 0);
+        let subtotal = 0;
+        let shipping = 5.00;
+
+        fetch("{% url 'bookstore:get_cart_summary' %}", { method: "GET" })
+        .then(response => response.json())
+        .then(data => {
+            subtotal = data.subtotal;
+            document.getElementById("total-items").textContent = totalItems;
+            document.getElementById("subtotal").textContent = `$ ${subtotal.toFixed(2)}`;
+            document.getElementById("shipping").textContent = `$ ${shipping.toFixed(2)}`;
+            document.getElementById("total_price").textContent = `$ ${(subtotal + 5).toFixed(2)}`;
+        })
+        .catch(error => console.error("🔴 Error fetching cart summary:", error));
+    }
+
+    updateCheckoutSummary(); // update Checkout Summary 
+
+    
+    document.getElementById("checkout-form").addEventListener("submit", function (event) {
+        event.preventDefault(); 
+
+        let formData = {
+            name: document.querySelector('input[name="name"]').value,
+            email: document.querySelector('input[name="email"]').value,
+            phone: document.querySelector('input[name="phone"]').value,
+            address: document.querySelector('input[name="address"]').value,
+            payment_method: document.querySelector('input[name="payment"]:checked')?.value || "",
+            cart: cart // 
+        };
+
+        console.log("🟢 Sent order data:", formData);
+
+        fetch("{% url 'bookstore:place_order' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: JSON.stringify(formData),
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("🟢 Server Response:", data);
+            if (data.success) {
+                alert("✅ Order created successfully!");
+                localStorage.removeItem("cart"); // 
+                window.location.href = "{% url 'bookstore:transaction' %}?order_id=" + data.order_id;
+            } else {
+                alert("⚠️ Order failed：" + (data.error || "未知错误"));
+            }
+        })
+        .catch(error => console.error("🔴 Order error:", error));
+    });
+});
+
+</script>
+  
+
 {% endblock %}
