@@ -360,7 +360,7 @@ def get_cart_summary(request):
     })
     return JsonResponse(cart_summary)
 
-@login_required
+@login_required(login_url='/login/')
 def my_orders(request):
     orders = Order.objects.filter(user=request.user).order_by("-id").prefetch_related("items")
     

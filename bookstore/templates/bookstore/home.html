@@ -60,7 +60,7 @@
                     <img src="{{ book.book_image }}" class="card-img-top book-image" alt="{{ book.title }}" />
                     <div class="card-body">
                         <h5 class="card-title">
-                            <a href="#" class="text-decoration-none">
+                            <a href="{% url 'bookstore:detail' book.id %}" class="text-decoration-none">
                                 {{ book.title }}
                             </a>
                         </h5>
