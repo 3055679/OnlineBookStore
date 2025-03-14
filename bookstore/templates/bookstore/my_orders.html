@@ -41,6 +41,8 @@
                     <a href="{% url 'bookstore:cancel_order_page' order.id %}" class="btn btn-danger">Cancel Order</a>
                 {% elif order.status == "Delivered" %}
                 <a href="{% url 'bookstore:return_order_page' order.id %}" class="btn btn-warning">Return</a>
+                <br>
+                <a href="{% url 'bookstore:write_review' order.id %}" class="btn btn-success mt-2">Write Review</a>
                 {% elif order.status == "Return Requested" %}
                 <a href="{% url 'bookstore:order_status' order.id %}" class="btn btn-info">View Status</a>
                 {% else %}

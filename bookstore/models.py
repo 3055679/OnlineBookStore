@@ -122,3 +122,13 @@ class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items") 
     book = models.ForeignKey("Book", on_delete=models.CASCADE) 
     quantity = models.IntegerField(default=1) 
+
+class Review(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name="reviews")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # 关联用户
+    review_text = models.TextField()
+    rating = models.IntegerField(default=5)  # 可选评分
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Review for {self.book.title} by {self.user.username}"

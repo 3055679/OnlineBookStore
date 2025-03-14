@@ -1,11 +1,14 @@
 import json
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import  render, get_object_or_404
-from .models import Book, Cart, Order,Category,OrderItem
+from .models import Book, Cart, Order,Category,OrderItem,Review
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
+from django.shortcuts import redirect
+from django.urls import reverse
+
 
 def home(request):
     book_list=Book.objects.all()
@@ -34,8 +37,10 @@ def get_categories(request):
 
 def detail(request,book_id):
     book=Book.objects.get(pk=book_id)
+    reviews = book.reviews.all().order_by("-created_at")
     context={
         'book':book,
+        'reviews': reviews,
     }
     return render(request,'bookstore/detail.html',context)
 
@@ -174,7 +179,7 @@ def place_order(request):
             cart = data.get("cart", {})  
 
             if not cart:
-                return JsonResponse({"success": False, "error": "购物车为空"})
+                return JsonResponse({"success": False, "error": "The cart is empty."})
 
             
             user = request.user if request.user.is_authenticated else None
@@ -448,3 +453,19 @@ def request_return(request, order_id):
             return JsonResponse({"success": False, "error": "Order not found."})
 
     return JsonResponse({"success": False, "error": "Invalid request"})
+
+def write_review(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    books = order.items.all()  # 获取该订单的书籍
+    return render(request, "bookstore/write_review.html", {"order": order, "books": books})
+
+def submit_review(request):
+    if request.method == "POST":
+        book_id = request.POST.get("book_id")
+        review_text = request.POST.get("review", "").strip()
+        rating = request.POST.get("rating", 5)
+
+        book = get_object_or_404(Book, id=book_id)
+        Review.objects.create(book=book, user=request.user, review_text=review_text, rating=rating)
+
+        return redirect(reverse("bookstore:my_orders"))  # ✅ 这里改成 reverse

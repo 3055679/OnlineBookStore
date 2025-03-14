@@ -351,7 +351,7 @@
                 localStorage.removeItem("cart"); // 
                 window.location.href = "{% url 'bookstore:transaction' %}?order_id=" + data.order_id;
             } else {
-                alert("⚠️ Order failed：" + (data.error || "未知错误"));
+                alert("⚠️ Order failed：" + (data.error || "Unknown Error."));
             }
         })
         .catch(error => console.error("🔴 Order error:", error));

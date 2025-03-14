@@ -1,7 +1,7 @@
 from django.urls import path
 from . import views
 from .views import books_by_category
-from .views import order_status,my_orders
+from .views import order_status,my_orders, write_review,submit_review
 
 app_name='bookstore'
 urlpatterns=[
@@ -28,4 +28,6 @@ urlpatterns=[
     path("cancel_order_page/<int:order_id>/", views.cancel_order_page, name="cancel_order_page"),
     path("return_order_page/<int:order_id>/", views.return_order_page, name="return_order_page"),
     path("request_return/<int:order_id>/", views.request_return, name="request_return"),
+    path("write_review/<int:order_id>/", views.write_review, name="write_review"),
+    path("submit_review/", views.submit_review, name="submit_review"),
 ] 

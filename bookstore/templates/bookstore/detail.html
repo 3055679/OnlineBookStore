@@ -56,4 +56,31 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+
+<div class="container mt-4">
+
+  <h3>Reviews</h3>
+  {% if reviews %}
+      {% for review in reviews %}
+          <div class="card my-3">
+              <div class="card-body">
+                  <h5 class="card-title">
+                      {{ review.user.username }} 
+                      <small class="text-muted">
+                          ({{ review.created_at|date:"Y-m-d H:i" }})
+                      </small>
+                  </h5>
+                  <p class="card-text">
+                      Rating: {{ review.rating }}/5
+                  </p>
+                  <p class="card-text">
+                      {{ review.review_text }}
+                  </p>
+              </div>
+          </div>
+      {% endfor %}
+  {% else %}
+      <p>No reviews yet. Be the first to review!</p>
+  {% endif %}
+</div>
 {% endblock %}
