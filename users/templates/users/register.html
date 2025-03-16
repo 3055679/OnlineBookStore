@@ -4,16 +4,36 @@
 <!-- You can leave it empty or add something here -->
 {% endblock %} {% block body %}
 
-<!-- <form method="POST">
-  {% csrf_token %} {{ form }}
-  <button type="submit">SignUp</button>
-</form>  
-
--->
-
 <div class="container d-flex justify-content-center align-items-center vh-100">
   <div class="card shadow p-4" style="width: 400px">
     <h2 class="text-center mb-3">New User</h2>
+
+    <!-- Debug: Display all form errors -->
+    <!-- <div class="alert alert-danger">{{ form.errors }}</div> -->
+    {% if form.errors %}
+    <div class="alert alert-danger">{{ form.errors }}</div>
+    {% endif %}
+
+    <!-- Display Django messages (e.g., success messages) -->
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div
+        class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}"
+      >
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Display general form errors (non-field errors) -->
+    {% if form.non_field_errors %}
+    <div class="alert alert-danger">
+      {% for error in form.non_field_errors %} {{ error }} {% endfor %}
+    </div>
+    {% endif %}
+
     <form method="POST">
       {% csrf_token %}
 
@@ -27,6 +47,15 @@
           placeholder="Enter your username"
           required
         />
+        <!-- {% if form.username.errors %}
+        <div class="invalid-feedback">
+          {% for error in form.username.errors %} {{ error }} {% endfor %}
+        </div>
+        {% endif %} -->
+
+        {% for error in form.username.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
 
       <div class="mb-3">
@@ -39,6 +68,9 @@
           placeholder="Enter your email"
           required
         />
+        {% for error in form.email.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
 
       <div class="mb-3">
@@ -51,6 +83,16 @@
           placeholder="Enter your password"
           required
         />
+
+        <!-- {% if form.password1.errors %}
+        <div class="invalid-feedback">
+          {% for error in form.password1.errors %} {{ error }} {% endfor %}
+        </div>
+        {% endif %} -->
+
+        {% for error in form.password1.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
 
       <div class="mb-3">
@@ -63,6 +105,16 @@
           placeholder="Confirm your password"
           required
         />
+
+        <!-- {% if form.password2.errors %}
+        <div class="invalid-feedback">
+          {% for error in form.password2.errors %} {{ error }} {% endfor %}
+        </div>
+        {% endif %} -->
+
+        {% for error in form.password2.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
       </div>
 
       <button type="submit" class="btn btn-primary w-100 mt-3">Register</button>

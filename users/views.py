@@ -1,29 +1,7 @@
-# from django.shortcuts import redirect, render
-# # from django.contrib.auth.forms import UserCreationForm
-# from django.contrib import messages
-# from django.contrib.auth import logout
-# from .forms import RegisterForm
-
-# def register(request):
-#     if request.method == 'POST':
-#         # form = UserCreationForm(request.POST)
-#         form = RegisterForm(request.POST)
-#         if form.is_valid():
-#             user=form.save()
-#             # username=form.cleaned_data.get('username')
-            
-#             messages.success(request,f'Welcome {user.username}, your account is created')
-#             logout(request)  # Forcefully log out user to ensure they see the login page
-#             print("Redirecting to:", redirect('login'))  # Debugging line
-#             return redirect('login')
-#     else:
-#         form=RegisterForm()
-#     return render(request, 'users/register.html',{'form':form})
-
 from django.shortcuts import redirect, render
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .forms import RegisterForm
+from .forms import  RegisterForm
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
@@ -33,25 +11,37 @@ from django.template.loader import render_to_string
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_str
+from django.contrib import messages
+from django.contrib.messages.storage import session
+from django.contrib.messages import get_messages
+
+
 
 def register(request):
+    print("🟢 Register view called")  # Debugging
     if request.method == 'POST':
+        print("🟢 POST request received")  # Debugging
         form = RegisterForm(request.POST)
+        print("🟢 Form data:", request.POST)  # Debugging
         if form.is_valid():
+            print("🟢 Form is valid")  # Debugging
             user = form.save()
+            print("🟢 User registered successfully:", user.username)  # Debugging
             messages.success(request, f'Welcome {user.username}, your account has been created! Please log in.')
+            print("🟢 Message added to the session")  # Debugging
 
-            logout(request)  # Ensure user is logged out
-            request.session.pop('_messages', None)  # Clear all stored messages before redirect
-
+            # Log out the user (if needed) and redirect to login
+            logout(request)
+            print("🟢 User logged out")  # Debugging
             return redirect('login')
+        else:
+            print("🔴 Form is invalid:", form.errors)  # Debugging
     else:
         form = RegisterForm()
+        print("🟢 GET request received")  # Debugging
 
     return render(request, 'users/register.html', {'form': form})
 
-
-from django.contrib.messages import get_messages
 
 def custom_login(request):
     if request.method == 'POST':
@@ -80,31 +70,6 @@ def custom_logout(request):
     messages.success(request, "You have been logged out successfully.")
     return render(request, 'users/logout.html')
 
-
-# def forgot_password(request):
-#     if request.method == 'POST':
-#         email = request.POST.get('email')
-#         try:
-#             user = User.objects.get(email=email)
-#             token = default_token_generator.make_token(user)
-#             uid = urlsafe_base64_encode(force_bytes(user.pk))
-
-#             # Prepare the reset link email
-#             reset_link = f"{get_current_site(request).domain}/reset-password/{uid}/{token}/"
-#             subject = "Password Reset Request"
-#             message = render_to_string('users/password_reset_email.html', {
-#                 'user': user,
-#                 'reset_link': reset_link,
-#             })
-
-#             # Send reset email
-#             send_mail(subject, message, 'admin@bookstore.com', [email])
-
-#             return redirect('password_reset_done')  # Create this template as a success message page
-#         except User.DoesNotExist:
-#             pass  # If email not found, we can either handle it or silently pass
-
-#     return render(request, 'users/forgot_password.html')
 
 
 def forgot_password(request):
@@ -156,11 +121,11 @@ def reset_password(request, uidb64, token):
         return redirect('password_reset_invalid')  # Create an invalid link template
     
 
-def password_reset_done(request):
-    return render(request, 'users/password_reset_done.html')
+# def password_reset_done(request):
+#     return render(request, 'users/password_reset_done.html')
 
 
-def password_reset_invalid(request):
-    return render(request, 'users/password_reset_invalid.html')
+# def password_reset_invalid(request):
+#     return render(request, 'users/password_reset_invalid.html')
 
 
