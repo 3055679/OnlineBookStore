@@ -37,8 +37,8 @@
                   </a>
               </td>
               <td>
-                {% if order.status == "Processing" %}
-                    <a href="{% url 'bookstore:cancel_order_page' order.id %}" class="btn btn-danger">Cancel Order</a>
+                {% if order.status == "Confirmed" %}
+                <a href="{% url 'bookstore:cancel_order_page' order.id %}" class="btn btn-danger">Cancel Order</a>
                 {% elif order.status == "Delivered" %}
                 <a href="{% url 'bookstore:return_order_page' order.id %}" class="btn btn-warning">Return</a>
                 <br>

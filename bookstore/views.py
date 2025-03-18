@@ -395,9 +395,8 @@ def cancel_order(request, order_id):
 
             order = Order.objects.get(id=order_id)
 
-            if order.status != "Processing":
-                return JsonResponse({"success": False, "error": "Only processing orders can be cancelled."})
-
+            if order.status != "Confirmed":
+                return JsonResponse({"success": False, "error": "Only confirmed orders can be cancelled."})
          
             order.cancel_reason = reason
             order.status = "Cancelled"
