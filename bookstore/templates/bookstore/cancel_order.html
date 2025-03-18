@@ -1,0 +1,47 @@
+{% extends 'bookstore/base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center">Request to Cancel Order <span id="orderIdText">#{{ order.id }}</span></h2>
+
+    <form id="cancelOrderForm">
+        <div class="form-group">
+            <label for="cancelReason">Reason for cancelling order:</label>
+            <textarea id="cancelReason" name="reason" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send cancellation request</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("cancelOrderForm").addEventListener("submit", function (event) {
+        event.preventDefault(); 
+
+        let reason = document.getElementById("cancelReason").value.trim();
+        if (reason === "") {
+            alert("⚠️ Please provide a reason for cancellation.");
+            return;
+        }
+
+        fetch(`/bookstore/cancel_order/{{ order.id }}/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ reason: reason })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ Order cancelled successfully!");
+                window.location.href = "{% url 'bookstore:my_orders' %}"; // return to My Order
+            } else {
+                alert("❌ Error: " + data.error);
+            }
+        })
+        .catch(error => console.error("🔴 Error:", error));
+    });
+</script>
+
+{% endblock %}

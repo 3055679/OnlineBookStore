@@ -1,0 +1,33 @@
+{% extends 'bookstore/base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Write a Review</h2>
+    <form method="POST" action="{% url 'bookstore:submit_review' %}">
+        {% csrf_token %}
+        
+        <label for="book">Select a book:</label>
+        <select name="book_id" class="form-control">
+            {% for item in books %}
+                <option value="{{ item.book.id }}">{{ item.book.title }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="review">Your Review:</label>
+        <textarea name="review" class="form-control" rows="4"></textarea>
+
+        <div class="form-group mt-3">
+            <label for="rating">Rating:</label>
+            <select name="rating" class="form-control">
+              <option value="1">1 - Very Poor</option>
+              <option value="2">2 - Poor</option>
+              <option value="3">3 - Average</option>
+              <option value="4">4 - Good</option>
+              <option value="5">5 - Excellent</option>
+            </select>
+          </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Submit Review</button>
+    </form>
+</div>
+{% endblock %}

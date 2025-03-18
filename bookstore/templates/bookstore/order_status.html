@@ -1,0 +1,77 @@
+{% extends 'bookstore/base.html' %}
+
+{% block body %}
+
+<div class="container mt-5">
+    <h2 class="text-center">Order Status</h2>
+    
+    <div class="card p-4 mt-4">
+        <h4>Order ID: #{{ order.id }}</h4>
+        <p><b>Order Date:</b> {{ order.created_at|date:"d/m/Y" }}</p>
+        <p><b>Total Amount:</b> ${{ order.total_price }}</p>
+        <p><b>Shipping Address:</b> {{ order.address }}</p>
+
+        <hr>
+
+    <h4>Order Status</h4>
+    <ul id="order-status">
+        <li>Order Placed & Confirmed <span id="confirmed-check">{% if order.status in "Confirmed Shipped Delivered Return Requested Cancelled" %}✔{% endif %}</span></li>
+        <li>Shipped <span id="shipped-check">{% if order.status in "Shipped Delivered" %}✔{% endif %}</span></li>
+        <li>Delivered <span id="delivered-check">{% if order.status == "Delivered" %}✔{% endif %}</span></li>
+        <li>Return Requested <span id="return-check">{% if order.status == "Return Requested" %}✔{% endif %}</span></li>
+        <li>Cancelled <span id="cancelled-check">{% if order.status == "Cancelled" %}✔{% endif %}</span></li>
+    </ul>
+
+        <hr>
+
+        <h4>Order Items</h4>
+        <ul>
+            {% for item in order.items.all %}
+                <li>{{ item.book.title }} | Qty: {{ item.quantity }} | ${{ item.book.price }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<div id="order-data" data-order-id="{{ order.id }}"></div>
+
+<script>
+    function checkOrderStatus() {
+        let orderId = document.getElementById("order-data").getAttribute("data-order-id");
+
+        fetch(`/bookstore/order_status_api/${orderId}/`)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Order Status from API:", data.status); // Debug
+
+            let confirmedCheck = ["Confirmed", "Shipped", "Delivered", "Return Requested", "Cancelled"].includes(data.status) ? "✔" : "";
+            let shippedCheck = ["Shipped", "Delivered"].includes(data.status) ? "✔" : "";
+            let deliveredCheck = data.status === "Delivered" ? "✔" : "";
+            let returnCheck = data.status === "Return Requested" ? "✔" : "";
+            let cancelledCheck = data.status === "Cancelled" ? "✔" : "";
+
+            if (document.getElementById("confirmed-check")) {
+                document.getElementById("confirmed-check").innerText = confirmedCheck;
+            }
+            if (document.getElementById("shipped-check")) {
+                document.getElementById("shipped-check").innerText = shippedCheck;
+            }
+            if (document.getElementById("delivered-check")) {
+                document.getElementById("delivered-check").innerText = deliveredCheck;
+            }
+            if (document.getElementById("return-check")) {
+                document.getElementById("return-check").innerText = returnCheck;
+            }
+            if (document.getElementById("cancelled-check")) {
+                document.getElementById("cancelled-check").innerText = cancelledCheck;
+            }
+        })
+        .catch(error => console.error("Error fetching order status:", error));
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        checkOrderStatus();
+        setInterval(checkOrderStatus, 5000);
+    });
+</script>
+{% endblock %}

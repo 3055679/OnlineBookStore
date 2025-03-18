@@ -1,0 +1,52 @@
+{% extends 'bookstore/base.html' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2 class="text-center">Order Return Request Form</h2>
+    
+    <div class="card p-4 mt-4">
+        <h4>Order ID: #{{ order.id }}</h4>
+        <p><b>Address:</b> {{ order.address }}</p>
+
+        <form id="returnOrderForm" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="order_id" value="{{ order.id }}">
+
+            <label for="reason"><b>Reason for return:</b></label>
+            <textarea id="reason" name="reason" class="form-control" placeholder="Tell us in few words"></textarea>
+
+            <label for="comments"><b>Additional Comments:</b></label>
+            <textarea id="comments" name="comments" class="form-control"></textarea>
+
+            <label for="photo"><b>Upload photo:</b></label>
+            <input type="file" id="photo" name="photo" class="form-control">
+
+            <button type="submit" class="btn btn-primary mt-3">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById("returnOrderForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        let formData = new FormData(this);
+        let orderId = "{{ order.id }}";
+
+        fetch(`/bookstore/request_return/${orderId}/`, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("✅ Return request submitted successfully!");
+                window.location.href = "/bookstore/my_orders/";
+            } else {
+                alert("❌ Error: " + data.error);
+            }
+        })
+        .catch(error => console.error("🔴 Error:", error));
+    });
+</script>
+{% endblock %}

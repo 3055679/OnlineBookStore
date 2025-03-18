@@ -76,6 +76,7 @@
     }
 
     let bookIds = Object.keys(cart).join(",");
+    console.log("📌 Fetching Books with IDs:", bookIds);
 
     // Fetch book details from Django
     fetch(`/bookstore/get-cart-books/?ids=${bookIds}`)
