@@ -30,4 +30,10 @@ urlpatterns=[
     path("request_return/<int:order_id>/", views.request_return, name="request_return"),
     path("write_review/<int:order_id>/", views.write_review, name="write_review"),
     path("submit_review/", views.submit_review, name="submit_review"),
+    
+    # Footer pages
+    path('contact/', views.contact, name='contact'),
+    path('cookies/', views.cookies, name='cookies'),
+    path('legal/', views.legal, name='legal'),
+    path('privacy/', views.privacy, name='privacy'),
 ] 

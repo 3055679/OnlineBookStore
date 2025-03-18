@@ -468,3 +468,16 @@ def submit_review(request):
         Review.objects.create(book=book, user=request.user, review_text=review_text, rating=rating)
 
         return redirect(reverse("bookstore:my_orders"))  # ✅ 这里改成 reverse
+
+# Footer page views
+def contact(request):
+    return render(request, 'bookstore/contact.html')
+
+def cookies(request):
+    return render(request, 'bookstore/cookies.html')
+
+def legal(request):
+    return render(request, 'bookstore/legal.html')
+
+def privacy(request):
+    return render(request, 'bookstore/privacy.html')

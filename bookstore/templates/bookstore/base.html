@@ -116,7 +116,12 @@
     <!-- Footer -->
     {% block footer %}
     <footer class="bg-dark text-light text-center py-3 mt-auto">
-      <p>Contact Us | Cookie Policy | Legal Terms | Privacy Policy</p>
+      <p>
+        <a href="{% url 'bookstore:contact' %}" class="text-light mx-2">Contact Us</a> | 
+        <a href="{% url 'bookstore:cookies' %}" class="text-light mx-2">Cookie Policy</a> | 
+        <a href="{% url 'bookstore:legal' %}" class="text-light mx-2">Legal Terms</a> | 
+        <a href="{% url 'bookstore:privacy' %}" class="text-light mx-2">Privacy Policy</a>
+      </p>
     </footer>
 
     <script>
