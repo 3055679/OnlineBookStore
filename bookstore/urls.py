@@ -33,6 +33,7 @@ urlpatterns=[
     
     # Footer pages
     path('contact/', views.contact, name='contact'),
+    path('submit_contact/', views.submit_contact, name='submit_contact'),
     path('cookies/', views.cookies, name='cookies'),
     path('legal/', views.legal, name='legal'),
     path('privacy/', views.privacy, name='privacy'),

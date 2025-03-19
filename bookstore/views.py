@@ -1,13 +1,13 @@
 import json
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import  render, get_object_or_404
+from django.shortcuts import  render, get_object_or_404, redirect
 from .models import Book, Cart, Order,Category,OrderItem,Review
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
-from django.shortcuts import redirect
 from django.urls import reverse
+from django.contrib import messages
 
 
 def home(request):
@@ -472,6 +472,21 @@ def submit_review(request):
 # Footer page views
 def contact(request):
     return render(request, 'bookstore/contact.html')
+
+def submit_contact(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+        
+        # Here you would typically save this to a database or send an email
+        # For now, we'll just show a success message
+        
+        messages.success(request, "Thank you for contacting us! We will get back to you shortly.")
+        return redirect('bookstore:contact')
+    
+    return redirect('bookstore:contact')
 
 def cookies(request):
     return render(request, 'bookstore/cookies.html')
